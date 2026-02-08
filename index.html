@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>জিয়াউদ্দীন স্কুল এন্ড কলেজ - 3D মাইন্ড ম্যাপ</title>
+    <style>
+        :root {
+            --primary-color: #4facfe;
+            --secondary-color: #00f2fe;
+            --bg-color: #1e1e2e;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #ffffff;
+            --line-color: #555;
+        }
+
+        body {
+            font-family: 'SolaimanLipi', 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 10% 20%, rgb(30, 30, 46) 0%, rgb(15, 15, 20) 90%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: auto;
+        }
+
+        /* Tree Container */
+        .tree {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        ul {
+            padding-left: 20px;
+            list-style: none;
+            position: relative;
+            transition: all 0.5s;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            position: relative;
+        }
+
+        /* Connector Lines */
+        li::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            border-top: 2px solid var(--line-color);
+            width: 20px;
+            height: 1px;
+        }
+
+        ul ul::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            bottom: 50%;
+            border-left: 2px solid var(--line-color);
+            height: 100%; /* Adjust via JS for dynamic height if needed, but CSS logic covers mostly */
+        }
+        
+        /* Vertical Line Logic */
+        li:first-child::after {
+            content: '';
+            position: absolute;
+            left: -20px;
+            bottom: 50%;
+            height: 100%; /* Cover top half */
+            border-left: 2px solid var(--line-color);
+            top: auto;
+        }
+
+        li:last-child::after {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            height: 100%; /* Cover bottom half logic needs specific placement */
+            border-left: 2px solid var(--bg-color); /* Hack to hide line going down */
+            width: 2px;
+        }
+        
+        /* Better CSS Tree Lines approach */
+        ul { padding-top: 20px; position: relative; transition: all 0.5s; }
+        li { float: left; text-align: center; list-style-type: none; position: relative; padding: 20px 5px 0 5px; transition: all 0.5s; display: flex; align-items: center; }
+        
+        /* Resetting previous logic for a Left-to-Right Flex Tree */
+        .mindmap-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .node-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .children {
+            display: flex;
+            flex-direction: column;
+            margin-left: 40px;
+            position: relative;
+        }
+        
+        /* Connecting Lines */
+        .children::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 0;
+            bottom: 0;
+            border-left: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .node-container {
+            position: relative;
+            padding: 10px 0;
+        }
+
+        .node-container::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            width: 20px;
+            border-top: 2px solid rgba(255,255,255,0.3);
+        }
+
+        /* Remove connector for root */
+        .root-wrapper > .node-content::before { display: none; }
+        .root-wrapper > .children { margin-left: 40px; }
+        .root-wrapper > .children::before { display: none; } /* Hide main vertical line for root children container */
+        
+        /* Custom connectors for Root's immediate children */
+        .root-children > .node-container::before {
+             left: -40px; width: 40px;
+        }
+        .root-children {
+            position: relative;
+        }
+        .root-children::before {
+            content: '';
+            position: absolute;
+            left: -40px;
+            top: 50%; /* This needs dynamic calculation or flex alignment */
+            bottom: 0;
+            border-left: 2px solid rgba(255,255,255,0.3);
+            /* This part is tricky with pure CSS for dynamic heights, using JS allows perfect lines */
+        }
+
+
+        /* --- 3D CARD STYLING --- */
+        .node-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 
+                0 10px 20px rgba(0,0,0,0.2), 
+                inset 0 0 15px rgba(255,255,255,0.1);
+            color: #fff;
+            font-weight: bold;
+            text-align: center;
+            min-width: 150px;
+            max-width: 250px;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.27), box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Root Node Specific */
+        .root-node {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: 1.2em;
+            padding: 20px 30px;
+            border: none;
+            box-shadow: 0 0 20px rgba(118, 75, 162, 0.6);
+        }
+
+        /* Level 1 Nodes */
+        .level-1 {
+            background: linear-gradient(135deg, #13547a 0%, #80d0c7 100%);
+            color: #fff;
+        }
+
+        /* Level 2 Nodes (Leaves) */
+        .level-2 {
+            background: rgba(255, 255, 255, 0.05);
+            font-size: 0.9em;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        /* Hover Effects */
+        .node-content:hover {
+            transform: scale(1.05) translateZ(20px) rotateX(5deg);
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.4), 
+                0 0 15px var(--secondary-color);
+            z-index: 10;
+        }
+
+        /* Expand/Collapse Button */
+        .toggle-btn {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 12px;
+            opacity: 0.7;
+            transition: 0.3s;
+        }
+        .collapsed + .children {
+            display: none;
+        }
+        
+        /* Canvas for drawing lines (SVG Overlay) */
+        #svg-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .node-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .children {
+                margin-left: 20px;
+                border-left: 2px solid rgba(255,255,255,0.1);
+                padding-left: 20px;
+            }
+            .node-content {
+                width: 90%;
+                margin-bottom: 10px;
+            }
+            #svg-lines { display: none; } /* Disable fancy lines on mobile for simpler CSS lines */
+        }
+
+    </style>
+</head>
+<body>
+
+    <svg id="svg-lines"></svg>
+
+    <div class="mindmap-container">
+        
+        <div class="node-wrapper root-wrapper">
+            <div class="node-content root-node" id="root">
+                জিয়াউদ্দীন স্কুল এন্ড কলেজ
+            </div>
+
+            <div class="children">
+                
+                <div class="node-container">
+                    <div class="node-wrapper">
+                        <div class="node-content level-1">পরিচিতি <span class="toggle-btn">▼</span></div>
+                        <div class="children">
+                            <div class="node-container"><div class="node-content level-2">অবস্থান: কিশোরগঞ্জ</div></div>
+                            <div class="node-container"><div class="node-content level-2">প্রতিষ্ঠাতা: আলহাজ্ব মোঃ জিয়াউদ্দীন</div></div>
+                            <div class="node-container"><div class="node-content level-2">অধ্যক্ষ: শাহ মোঃ মজিবুর রহমান</div></div>
+                            <div class="node-container"><div class="node-content level-2">মূল লক্ষ্য: সৃজনশীল ও আধুনিক শিক্ষা</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="node-container">
+                    <div class="node-wrapper">
+                        <div class="node-content level-1">সুযোগ-সুবিধা <span class="toggle-btn">▼</span></div>
+                        <div class="children">
+                            <div class="node-container"><div class="node-content level-2">মাল্টিমিডিয়া ক্লাসরুম</div></div>
+                            <div class="node-container"><div class="node-content level-2">ডিজিটাল ল্যাব ও কম্পিউটার শিক্ষা</div></div>
+                            <div class="node-container"><div class="node-content level-2">অনলাইন অ্যাটেনডেন্স ও রেজাল্ট</div></div>
+                            <div class="node-container"><div class="node-content level-2">লাইব্রেরি ও সায়েন্স ল্যাব</div></div>
+                            <div class="node-container"><div class="node-content level-2">স্মার্ট আইডি কার্ড ও অটো এস.এম.এস</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="node-container">
+                    <div class="node-wrapper">
+                        <div class="node-content level-1">একাডেমিক কার্যক্রম <span class="toggle-btn">▼</span></div>
+                        <div class="children">
+                            <div class="node-container"><div class="node-content level-2">ই-বুক ও ডিজিটাল কন্টেন্ট</div></div>
+                            <div class="node-container"><div class="node-content level-2">সিলেবাস ও রুটিন</div></div>
+                            <div class="node-container"><div class="node-content level-2">অতিরিক্ত গণিত ও ইংরেজি ক্লাস</div></div>
+                            <div class="node-container"><div class="node-content level-2">নিয়মিত ডায়েরি সংরক্ষণ</div></div>
+                            <div class="node-container"><div class="node-content level-2">বার্ষিক ক্রীড়া ও সাংস্কৃতিক অনুষ্ঠান</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="node-container">
+                    <div class="node-wrapper">
+                        <div class="node-content level-1">বৈশিষ্ট্যসমূহ <span class="toggle-btn">▼</span></div>
+                        <div class="children">
+                            <div class="node-container"><div class="node-content level-2">অভিজ্ঞ শিক্ষক মণ্ডলী</div></div>
+                            <div class="node-container"><div class="node-content level-2">শারীরিক ও মানসিক শাস্তি নিষিদ্ধ</div></div>
+                            <div class="node-container"><div class="node-content level-2">আরবি ও ধর্মীয় নৈতিক শিক্ষা</div></div>
+                            <div class="node-container"><div class="node-content level-2">চিত্রাঙ্কন ও সাহিত্য চর্চা</div></div>
+                            <div class="node-container"><div class="node-content level-2">কঠোর নিরাপত্তা ও শৃঙ্খলা</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="node-container">
+                    <div class="node-wrapper">
+                        <div class="node-content level-1">তথ্য ও যোগাযোগ <span class="toggle-btn">▼</span></div>
+                        <div class="children">
+                            <div class="node-container"><div class="node-content level-2">ভর্তি হটলাইন: 01728135864</div></div>
+                            <div class="node-container"><div class="node-content level-2">ঠিকানা: ভাটগাঁও, কিশোরগঞ্জ সদর</div></div>
+                            <div class="node-container"><div class="node-content level-2">শিক্ষক ও কর্মচারী তালিকা</div></div>
+                            <div class="node-container"><div class="node-content level-2">নোটিশ ও ইভেন্ট ক্যালেন্ডার</div></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Interactive Toggle Functionality
+        document.querySelectorAll('.level-1').forEach(node => {
+            node.addEventListener('click', (e) => {
+                // Toggle the collapsed state class
+                node.classList.toggle('collapsed');
+                
+                // Toggle arrow direction
+                const btn = node.querySelector('.toggle-btn');
+                if (btn) {
+                    btn.textContent = node.classList.contains('collapsed') ? '◀' : '▼';
+                }
+
+                // Recalculate SVG lines after animation/display change
+                setTimeout(drawLines, 300); // Small delay to wait for rendering
+            });
+        });
+
+        // 3D Tilt Effect on Mouse Move
+        const cards = document.querySelectorAll('.node-content');
+        
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -10; // Max 10 deg rotation
+                const rotateY = ((x - centerX) / centerX) * 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            });
+        });
+
+        // Dynamic Line Drawing with SVG
+        // This makes sure lines connect perfectly regardless of screen size (Desktop only)
+        function drawLines() {
+            if (window.innerWidth <= 768) return; // Don't draw SVG lines on mobile, use CSS borders
+
+            const svg = document.getElementById('svg-lines');
+            svg.innerHTML = ''; // Clear previous lines
+            
+            // Set SVG size to document size
+            const bodyRect = document.body.getBoundingClientRect();
+            svg.setAttribute('width', document.body.scrollWidth);
+            svg.setAttribute('height', document.body.scrollHeight);
+
+            const root = document.querySelector('.root-node');
+            const level1Nodes = document.querySelectorAll('.level-1');
+
+            // Draw lines from Root to Level 1
+            drawConnection(root, level1Nodes);
+
+            // Draw lines from Level 1 to Level 2 (if visible)
+            level1Nodes.forEach(parent => {
+                if (!parent.classList.contains('collapsed')) {
+                    // Find the sibling 'children' container
+                    const wrapper = parent.closest('.node-wrapper');
+                    const childrenContainer = wrapper.querySelector('.children');
+                    if(childrenContainer) {
+                        const level2Nodes = childrenContainer.querySelectorAll('.level-2');
+                        drawConnection(parent, level2Nodes);
+                    }
+                }
+            });
+        }
+
+        function drawConnection(parent, children) {
+            const parentRect = parent.getBoundingClientRect();
+            const scrollX = window.scrollX;
+            const scrollY = window.scrollY;
+
+            // Connection Start Point (Right center of parent)
+            const startX = parentRect.right + scrollX;
+            const startY = parentRect.top + parentRect.height / 2 + scrollY;
+
+            children.forEach(child => {
+                const childRect = child.getBoundingClientRect();
+                
+                // Connection End Point (Left center of child)
+                const endX = childRect.left + scrollX;
+                const endY = childRect.top + childRect.height / 2 + scrollY;
+
+                // Create Bezier Curve
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                
+                // Control points for smooth S-curve
+                const c1 = startX + (endX - startX) / 2;
+                
+                const d = `M ${startX} ${startY} C ${c1} ${startY}, ${c1} ${endY}, ${endX} ${endY}`;
+                
+                path.setAttribute('d', d);
+                path.setAttribute('stroke', 'rgba(255,255,255,0.3)');
+                path.setAttribute('stroke-width', '2');
+                path.setAttribute('fill', 'none');
+                
+                document.getElementById('svg-lines').appendChild(path);
+            });
+        }
+
+        // Redraw lines on resize
+        window.addEventListener('resize', drawLines);
+        // Initial draw
+        window.addEventListener('load', drawLines);
+        // Backup loop to ensure lines appear after font load
+        setInterval(drawLines, 1000);
+
+    </script>
+</body>
+</html>
