@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অর্থনীতি ১ম পত্র: উপযোগ ও ক্রমহ্রাসমান প্রান্তিক উপযোগ বিধি</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN Link Updated -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script> 
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5; /* Default: Indigo-600 */
+            --primary-light: #eef2ff; /* Default: Indigo-50 */
+            --primary-dark: #3730a3; /* Default: Indigo-800 */
+            --mu-positive: #16a34a; /* Green-600 */
+            --mu-negative: #e11d48; /* Rose-600 */
+            --text-base: 16px;
+        }
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #f5f5f4;
+            color: #1c1917;
+            font-size: var(--text-base);
+            transition: font-size 0.3s;
+        }
+        .text-primary-color { color: var(--primary-color); }
+        .bg-primary-color { background-color: var(--primary-color); }
+        .bg-primary-light { background-color: var(--primary-light); }
+        .border-primary-color { border-color: var(--primary-color); }
+
+        /* The nav-active class now relies on CSS variables for color */
+        .nav-active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color) !important; /* !important to override text-stone-500 */
+            font-weight: 600;
+        }
+        .table-scroll::-webkit-scrollbar { height: 6px; }
+        .table-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
+        .table-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .slide-in { 
+            animation: slideIn 0.4s ease-out forwards; 
+            display: block !important;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Splash Screen Style */
+        #splash-screen {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            z-index: 1000;
+        }
+        .ad-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #a78bfa, #818cf8, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse-glow 2s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            from { text-shadow: 0 0 5px rgba(129, 140, 248, 0.5), 0 0 10px rgba(59, 130, 246, 0.3); }
+            to { text-shadow: 0 0 10px rgba(129, 140, 248, 0.8), 0 0 20px rgba(59, 130, 246, 0.6); }
+        }
+
+        /* Chart Container Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- SPLASH SCREEN -->
+    <div id="splash-screen" class="fixed inset-0 text-white transition-opacity duration-700 flex flex-col items-center justify-center">
+        <div class="text-center p-8">
+            <p class="text-xl sm:text-2xl text-gray-300 mb-2">অর্থনীতি ক্লাসে স্বাগতম</p>
+            <h1 class="ad-title mb-6">
+                উপযোগ ও ভোক্তা আচরণ: ডাইনামিক বিশ্লেষণ
+            </h1>
+            <p class="text-gray-400 mb-10 text-lg">
+                আপনার HSC অর্থনীতির গুরুত্বপূর্ণ ধারণাগুলো ইন্টারেক্টিভ ল্যাবে অনুভব করুন।
+            </p>
+            <button id="start-button" class="bg-primary-color hover:bg-primary-dark text-white font-extrabold py-4 px-12 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 border-b-4 border-indigo-700">
+                পড়া শুরু করুন ✨
+            </button>
+            <p class="text-xs text-gray-500 mt-6">
+                Powered by Interactive Data Simulation
+            </p>
+        </div>
+    </div>
+
+    <!-- Main App Content (Initially hidden by splash screen) -->
+    <div id="main-content" class="hidden flex flex-col min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-lg sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <span class="text-3xl mr-3">📈</span>
+                        <span class="font-bold text-xl text-stone-800 hidden sm:block">অর্থনীতি পাঠশালা</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <!-- Navigation Tabs - Added id="nav-container" for delegation -->
+                        <div id="nav-container" class="flex space-x-4 sm:space-x-8 overflow-x-auto h-full">
+                            <!-- Removed onclick. Added data-tab attribute for delegation. -->
+                            <button data-tab="concepts" id="nav-concepts" class="nav-tab-btn inline-flex items-center px-1 pt-1 text-sm font-medium text-stone-500 hover:text-primary-color transition-colors whitespace-nowrap">
+                                ধারণা ও সংজ্ঞা
+                            </button>
+                            <button data-tab="simulation" id="nav-simulation" class="nav-tab-btn inline-flex items-center px-1 pt-1 text-sm font-medium text-stone-500 hover:text-primary-color transition-colors whitespace-nowrap">
+                                সিমুলেশন ও গ্রাফ
+                            </button>
+                            <button data-tab="analysis" id="nav-analysis" class="nav-tab-btn inline-flex items-center px-1 pt-1 text-sm font-medium text-stone-500 hover:text-primary-color transition-colors whitespace-nowrap">
+                                অনুমান ও ব্যতিক্রম
+                            </button>
+                        </div>
+                        <!-- Settings Button -->
+                        <button id="settings-button" class="ml-4 p-2 bg-stone-100 hover:bg-primary-light text-stone-600 hover:text-primary-color rounded-full transition-colors shadow-inner">
+                            ⚙️ সেটআপ
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="flex-grow container mx-auto px-4 py-6 max-w-6xl">
+
+            <!-- Header -->
+            <header class="mb-8 text-center sm:text-left border-b border-stone-200 pb-6">
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-stone-800 mb-2">উপযোগ ও ক্রমহ্রাসমান প্রান্তিক উপযোগ বিধি</h1>
+                <p class="text-lg text-stone-600 max-w-3xl">
+                    একাদশ-দ্বাদশ শ্রেণি: অর্থনীতি ১ম পত্র। এই ইন্টারেক্টিভ অ্যাপের মাধ্যমে ভোক্তার আচরণ, উপযোগের ধারণা এবং ক্রমহ্রাসমান প্রান্তিক উপযোগ বিধিটি হাতে-কলমে শিখুন।
+                </p>
+            </header>
+
+            <!-- VIEW: Concepts (Theory) -->
+            <div id="view-concepts" class="view-section hidden">
+                <div class="bg-primary-light border-l-4 border-primary-color p-4 mb-8 rounded-r-lg shadow-sm">
+                    <p class="text-primary-dark">
+                        <strong>এই অংশের উদ্দেশ্য:</strong> এখানে আমরা উপযোগের মৌলিক সংজ্ঞা এবং গাণিতিক সূত্রগুলো জানব। সিমুলেশনে যাওয়ার আগে তাত্ত্বিক ভিত্তিটি মজবুত করা প্রয়োজন।
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Utility Definition -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-stone-100 hover:shadow-xl transition-shadow">
+                        <div class="flex items-center mb-4">
+                            <span class="text-3xl mr-3 text-primary-color">💡</span>
+                            <h2 class="text-2xl font-bold text-stone-800">উপযোগ (Utility) কী?</h2>
+                        </div>
+                        <p class="text-stone-600 leading-relaxed mb-4">
+                            অর্থনীতিতে উপযোগ বলতে কোনো দ্রব্য বা সেবা গ্রহণের মাধ্যমে মানুষের <strong>অভাব পূরণের ক্ষমতাকে</strong> বোঝায়। এটি একটি মানসিক ধারণা যা তৃপ্তি পরিমাপ করে।
+                        </p>
+                        <div class="bg-stone-100 p-3 rounded-lg text-sm text-stone-700 italic border-l-4 border-stone-300">
+                            "উদাহরণ: তৃষ্ণার্ত অবস্থায় এক গ্লাস পানি যে তৃপ্তি দেয়, সেটাই তার উপযোগ।"
+                        </div>
+                    </div>
+
+                    <!-- TU Definition -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-stone-100 hover:shadow-xl transition-shadow">
+                        <div class="flex items-center mb-4">
+                            <span class="text-3xl mr-3 text-primary-color">📈</span>
+                            <h2 class="text-2xl font-bold text-stone-800">মোট উপযোগ (TU)</h2>
+                        </div>
+                        <p class="text-stone-600 leading-relaxed mb-4">
+                            কোনো নির্দিষ্ট সময়ে একটি নির্দিষ্ট দ্রব্যের বিভিন্ন একক ভোগের ফলে প্রাপ্ত <strong>মোট সন্তুষ্টির</strong> সমষ্টি।
+                        </p>
+                        <div class="bg-primary-light p-3 rounded-lg font-mono text-primary-dark text-center text-sm sm:text-base border border-primary-color">
+                            TU = MU₁ + MU₂ + ... + MUₙ = $\Sigma$MU
+                        </div>
+                    </div>
+
+                    <!-- MU Definition -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-stone-100 hover:shadow-xl transition-shadow md:col-span-2">
+                        <div class="flex items-center mb-4">
+                            <span class="text-3xl mr-3 text-primary-color">📉</span>
+                            <h2 class="text-2xl font-bold text-stone-800">প্রান্তিক উপযোগ (MU)</h2>
+                        </div>
+                        <p class="text-stone-600 leading-relaxed mb-4">
+                            অতিরিক্ত <strong>এক একক ভোগ বৃদ্ধির ফলে</strong> মোট উপযোগের যে পরিবর্তন হয়। এটি হলো সর্বশেষ একক থেকে প্রাপ্ত তৃপ্তি।
+                        </p>
+                        <div class="bg-primary-light p-3 rounded-lg font-mono text-primary-dark text-center text-sm sm:text-base border border-primary-color">
+                            MU = $\Delta$TU / $\Delta$Q (মোট উপযোগের পরিবর্তন / ভোগের পরিবর্তন)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10 text-center">
+                    <button id="go-to-simulation-btn" class="bg-primary-color hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-full shadow-xl transition-transform transform hover:scale-105">
+                        সিমুলেশন শুরু করুন 👉
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW: Simulation (Dashboard) -->
+            <div id="view-simulation" class="view-section hidden">
+                <div class="bg-green-50 border-l-4 border-green-600 p-4 mb-6 rounded-r-lg shadow-sm">
+                    <p class="text-green-800">
+                        <strong>ইন্টারেক্টিভ ল্যাব:</strong> নিচের 'আপেল ভোগ করুন' বোতামে ক্লিক করে বিধিটি পরীক্ষা করুন। লক্ষ্য করুন কীভাবে ভোগের সাথে সাথে প্রান্তিক উপযোগ (MU) কমে এবং মোট উপযোগ (TU) বাড়ে।
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Control & Stats Panel -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <!-- Controls -->
+                        <div class="bg-white p-6 rounded-xl shadow-xl border border-stone-100">
+                            <h3 class="text-lg font-semibold text-stone-700 mb-4">নিয়ন্ত্রণ প্যানেল</h3>
+                            <div class="flex flex-col gap-3">
+                                <button id="btn-consume" class="w-full bg-primary-color hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-lg shadow-lg transition-colors flex items-center justify-center gap-2 transform hover:scale-[1.02]">
+                                    <span>🍎</span> আপেল ভোগ করুন
+                                </button>
+                                <button id="btn-reset" class="w-full bg-stone-200 hover:bg-stone-300 text-stone-700 font-semibold py-2 px-4 rounded-lg transition-colors">
+                                    রিসেট (Reset)
+                                </button>
+                            </div>
+                            <div id="simulation-status" class="mt-4 p-3 bg-stone-50 rounded-lg text-sm text-stone-600 text-center border border-stone-200">
+                                শুরু করতে 'আপেল ভোগ করুন' চাপুন।
+                            </div>
+                        </div>
+
+                        <!-- Live Stats -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-white p-4 rounded-xl shadow-md border border-stone-100 text-center">
+                                <div class="text-sm text-stone-500 mb-1">ভোগের একক (Q)</div>
+                                <div id="stat-q" class="text-3xl font-bold text-stone-800">0</div>
+                            </div>
+                            <div class="bg-white p-4 rounded-xl shadow-md border border-stone-100 text-center">
+                                <div class="text-sm text-stone-500 mb-1">মোট উপযোগ (TU)</div>
+                                <div id="stat-tu" class="text-3xl font-bold text-primary-color">0</div>
+                            </div>
+                            <div class="bg-white p-4 rounded-xl shadow-md border border-stone-100 text-center col-span-2">
+                                <div class="text-sm text-stone-500 mb-1">প্রান্তিক উপযোগ (MU)</div>
+                                <div id="stat-mu" class="text-4xl font-bold text-green-600">-</div>
+                                <div id="mu-trend-text" class="text-xs text-stone-400 mt-1">এখনও শুরু হয়নি</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visualization Panel -->
+                    <div class="lg:col-span-8 space-y-6">
+                        <!-- Chart -->
+                        <div class="bg-white p-4 rounded-xl shadow-xl border border-stone-100">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-lg font-semibold text-stone-700">TU ও MU রেখা</h3>
+                                <span class="text-xs text-stone-400 bg-stone-100 px-2 py-1 rounded">Chart.js</span>
+                            </div>
+                            <!-- CHART CONTAINER: Strictly constrained dimensions -->
+                            <div class="chart-container">
+                                <canvas id="utilityChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Data Table -->
+                        <div class="bg-white rounded-xl shadow-xl border border-stone-100 overflow-hidden">
+                            <h3 class="p-4 text-lg font-semibold text-stone-700 border-b border-stone-100 bg-stone-50">ভোগ ও উপযোগের সূচি</h3>
+                            <div class="overflow-x-auto table-scroll">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-stone-100 text-stone-600 text-sm">
+                                            <th class="p-3 font-semibold border-b">একক (Q)</th>
+                                            <th class="p-3 font-semibold border-b">TU</th>
+                                            <th class="p-3 font-semibold border-b">MU</th>
+                                            <th class="p-3 font-semibold border-b">অবস্থা</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="schedule-body" class="text-sm text-stone-700">
+                                        <tr class="text-stone-400 italic">
+                                            <td class="p-4" colspan="4">এখনও কোনো ডেটা নেই...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: Analysis (Assumptions & Exceptions) -->
+            <div id="view-analysis" class="view-section hidden">
+                <div class="bg-amber-50 border-l-4 border-amber-600 p-4 mb-8 rounded-r-lg shadow-sm">
+                    <p class="text-amber-800">
+                        <strong>বিশलेषण:</strong> এই বিধিটি সর্বদা কার্যকর হয় না। এর কিছু নির্দিষ্ট অনুমান এবং ব্যতিক্রম রয়েছে যা নিচে আলোচনা করা হলো।
+                    </p>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Assumptions -->
+                    <section>
+                        <h2 class="text-2xl font-bold text-stone-800 mb-4 flex items-center">
+                            <span class="bg-stone-200 text-stone-700 rounded-full w-8 h-8 flex items-center justify-center text-sm mr-3">৩</span>
+                            বিধির অনুমানসমূহ (Assumptions)
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-white p-4 rounded-lg border border-stone-200 shadow-md">
+                                <h4 class="font-bold text-primary-color mb-2">স্বাভাবিক একক</h4>
+                                <p class="text-stone-600 text-sm">ভোগের একক অবশ্যই স্বাভাবিক হতে হবে। যেমন এক চামচ পানি নয়, এক গ্লাস পানি।</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-stone-200 shadow-md">
+                                <h4 class="font-bold text-primary-color mb-2">সময় ব্যবধান</h4>
+                                <p class="text-stone-600 text-sm">পরপর ভোগের মধ্যে সময়ের ব্যবধান থাকা যাবে না। অবিরাম ভোগ করতে হবে।</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-stone-200 shadow-md">
+                                <h4 class="font-bold text-primary-color mb-2">ভোক্তার রুচি</h4>
+                                <p class="text-stone-600 text-sm">ভোক্তার আয়, রুচি, পছন্দ এবং অভ্যাস ভোগের সময় স্থির থাকতে হবে।</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-stone-200 shadow-md">
+                                <h4 class="font-bold text-primary-color mb-2">সমজাতীয় দ্রব্য</h4>
+                                <p class="text-stone-600 text-sm">প্রতিটি একক একই মানের এবং একই আকারের হতে হবে।</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-stone-200 shadow-md">
+                                <h4 class="font-bold text-primary-color mb-2">পরিমাপযোগ্যতা</h4>
+                                <p class="text-stone-600 text-sm">উপযোগকে সংখ্যা দ্বারা পরিমাপ করা সম্ভব বলে ধরে নেওয়া হয়।</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Exceptions -->
+                    <section>
+                        <h2 class="text-2xl font-bold text-stone-800 mb-4 flex items-center">
+                            <span class="bg-stone-200 text-stone-700 rounded-full w-8 h-8 flex items-center justify-center text-sm mr-3">৪</span>
+                            বিধির ব্যতিক্রম (Exceptions)
+                        </h2>
+                        <div class="bg-white rounded-xl shadow-xl overflow-hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2">
+                                <div class="p-6 border-b md:border-b-0 md:border-r border-stone-100">
+                                    <h3 class="font-bold text-lg text-rose-600 mb-3">💎 শখের দ্রব্য</h3>
+                                    <p class="text-stone-600 mb-2">ডাকটিকিট, পুরনো মুদ্রা বা দুর্লভ জিনিস সংগ্রহের ক্ষেত্রে উপযোগ না কমে বরং বাড়তে পারে।</p>
+                                </div>
+                                <div class="p-6 border-b border-stone-100">
+                                    <h3 class="font-bold text-lg text-rose-600 mb-3">💰 অর্থ ও সম্পদ</h3>
+                                    <p class="text-stone-600 mb-2">অর্থের ক্ষেত্রে এই বিধি খাটে না। মানুষের কাছে যত টাকা থাকে, আরো টাকার আকাঙ্ক্ষা তত বাড়ে।</p>
+                                </div>
+                                <div class="p-6 border-b md:border-b-0 md:border-r border-stone-100">
+                                    <h3 class="font-bold text-lg text-rose-600 mb-3">🎵 গান ও কবিতা</h3>
+                                    <p class="text-stone-600 mb-2">প্রিয় গান বা কবিতা বারবার শুনলে উপযোগ সাধারণত কমে না, বরং অনেক সময় ভালো লাগা বাড়ে।</p>
+                                </div>
+                                <div class="p-6">
+                                    <h3 class="font-bold text-lg text-rose-600 mb-3">🍷 অভ্যাস/নেশা</h3>
+                                    <p class="text-stone-600 mb-2">মাদকাসক্ত ব্যক্তির ক্ষেত্রে ভোগের পরিমাণ বাড়ার সাথে সাথে আকাঙ্ক্ষা বা MU বেড়ে যেতে পারে।</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-stone-800 text-stone-400 py-6 text-center mt-auto">
+            <p class="text-sm">© ২০২৫ অর্থনীতি পাঠশালা | শিক্ষার্থীদের জন্য তৈরি</p>
+        </footer>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1001] hidden flex items-center justify-center p-4 transition-opacity duration-300">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-lg transform transition-transform duration-300">
+            <h2 class="text-2xl font-bold text-stone-800 mb-4 border-b pb-2">⚙️ পেইজ সেটআপ</h2>
+            <p class="text-stone-600 mb-6">আপনার প্রয়োজন অনুযায়ী অ্যাপের ডিজাইন পরিবর্তন করুন।</p>
+
+            <!-- Accent Color Selector -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-stone-700 mb-2">১. মূল অ্যাকসেন্ট রঙ (Theme Color)</label>
+                <div class="flex space-x-4">
+                    <button data-color="indigo" class="w-10 h-10 bg-indigo-600 rounded-full shadow-md hover:ring-4 ring-offset-2 ring-indigo-300 transition-shadow color-select-btn" title="নীল">
+                        <span id="check-indigo" class="text-white text-lg font-bold">✓</span>
+                    </button>
+                    <button data-color="green" class="w-10 h-10 bg-green-600 rounded-full shadow-md hover:ring-4 ring-offset-2 ring-green-300 transition-shadow color-select-btn" title="সবুজ">
+                        <span id="check-green" class="hidden text-white text-lg font-bold">✓</span>
+                    </button>
+                    <button data-color="red" class="w-10 h-10 bg-rose-600 rounded-full shadow-md hover:ring-4 ring-offset-2 ring-rose-300 transition-shadow color-select-btn" title="লাল">
+                        <span id="check-red" class="hidden text-white text-lg font-bold">✓</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Font Size Slider -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-stone-700 mb-2">২. ফন্ট সাইজ সামঞ্জস্য</label>
+                <div class="flex items-center space-x-3">
+                    <span class="text-sm">ছোট (A)</span>
+                    <input type="range" id="fontSizeSlider" min="14" max="18" value="16" step="1" oninput="adjustFontSize(this.value)" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer">
+                    <span class="text-lg">বড় (A)</span>
+                </div>
+                <p class="text-xs text-stone-500 mt-2 text-center">বর্তমান সাইজ: <span id="currentFontSize">16px</span></p>
+            </div>
+
+            <button onclick="closeSettings()" class="mt-4 w-full bg-stone-700 hover:bg-stone-800 text-white font-semibold py-2 rounded-lg transition-colors shadow-md">
+                বন্ধ করুন
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const utilitySchedule = [
+            { q: 0, tu: 0, mu: null, note: 'শুরু' },
+            { q: 1, tu: 10, mu: 10, note: 'সর্বোচ্চ MU' },
+            { q: 2, tu: 18, mu: 8, note: 'MU কমছে' },
+            { q: 3, tu: 24, mu: 6, note: 'MU কমছে' },
+            { q: 4, tu: 28, mu: 4, note: 'MU কমছে' },
+            { q: 5, tu: 30, mu: 2, note: 'MU কমছে' },
+            { q: 6, tu: 30, mu: 0, note: 'সম্পৃক্তি বিন্দু (Saturation)' },
+            { q: 7, tu: 28, mu: -2, note: 'অ-উপযোগ (Disutility)' }
+        ];
+
+        let currentStep = 0;
+        let chartInstance = null;
+        const root = document.documentElement;
+        
+        const colors = {
+            indigo: { primary: '#4f46e5', light: '#eef2ff', dark: '#3730a3' },
+            green: { primary: '#10b981', light: '#ecfdf5', dark: '#065f46' },
+            red: { primary: '#ef4444', light: '#fef2f2', dark: '#991b1b' }
+        };
+
+        function initChart() {
+            if (chartInstance) {
+                chartInstance.destroy(); 
+            }
+            const ctx = document.getElementById('utilityChart').getContext('2d');
+            
+            // Chart.js global object is Chart
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [0],
+                    datasets: [
+                        {
+                            label: 'মোট উপযোগ (TU)',
+                            data: [0],
+                            borderColor: root.style.getPropertyValue('--primary-color') || colors.indigo.primary,
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'প্রান্তিক উপযোগ (MU)',
+                            data: [null],
+                            borderColor: root.style.getPropertyValue('--mu-positive') || '#16a34a',
+                            backgroundColor: root.style.getPropertyValue('--mu-positive') || '#16a34a',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointStyle: 'rectRot',
+                            pointRadius: 6,
+                            tension: 0.1,
+                            yAxisID: 'y'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { font: { family: "'Hind Siliguri', sans-serif" } }
+                        },
+                        tooltip: {
+                            bodyFont: { family: "'Hind Siliguri', sans-serif" },
+                            titleFont: { family: "'Hind Siliguri', sans-serif" }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'ভোগের একক (Quantity)', font: { weight: 'bold' } }
+                        },
+                        y: {
+                            title: { display: true, text: 'উপযোগ (Utility)', font: { weight: 'bold' } },
+                            suggestedMin: -5,
+                            suggestedMax: 35
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Core App Functionality ---
+        function startApp() {
+            // Step 1: Hide splash screen smoothly
+            const splash = document.getElementById('splash-screen');
+            const main = document.getElementById('main-content');
+
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.classList.add('hidden');
+                // Step 2: Show main content
+                main.classList.remove('hidden');
+                
+                // Step 3: Switch to the initial tab
+                switchTab('concepts');
+            }, 700);
+            
+            // Set initial theme color
+            setAccentColor('indigo'); 
+        }
+
+        // ROBUST switchTab FUNCTION using pure class manipulation
+        function switchTab(tabId) {
+            // 1. Handle Views
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('slide-in');
+            });
+            const targetView = document.getElementById(`view-${tabId}`);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+                targetView.classList.add('slide-in');
+            }
+            
+            // 2. Handle Navigation Buttons
+            document.querySelectorAll('.nav-tab-btn').forEach(el => {
+                el.classList.remove('nav-active', 'text-stone-900');
+                el.classList.add('text-stone-500');
+            });
+
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('nav-active', 'text-stone-900');
+                activeBtn.classList.remove('text-stone-500');
+            }
+
+            // 3. Handle Chart Initialization/Resizing
+            if (tabId === 'simulation') {
+                if (!chartInstance) {
+                    initChart();
+                } else {
+                    // Use requestAnimationFrame for reliable resizing after the element is visible
+                    requestAnimationFrame(() => chartInstance.resize());
+                }
+            }
+        }
+
+        function consumeUnit() {
+            // Check if the chart is initialized and data exists
+            if (!chartInstance) {
+                 showMessageBox("ত্রুটি", "চার্ট শুরু হয়নি। সিমুলেশন ট্যাবে গিয়ে আবার চেষ্টা করুন।");
+                 return;
+            }
+            
+            if (currentStep >= utilitySchedule.length - 1) {
+                showMessageBox("সিমুলেশন শেষ!", "আপনি অ-উপযোগ পর্যায়ে পৌঁছে গেছেন। আবার শুরু করতে 'রিসেট' চাপুন।");
+                return;
+            }
+
+            currentStep++;
+            const data = utilitySchedule[currentStep];
+
+            updateDOM(data);
+            updateChart(data);
+            updateTable(data);
+            checkStatus(data);
+        }
+
+        function resetSimulation() {
+            currentStep = 0;
+            
+            document.getElementById('stat-q').innerText = '0';
+            document.getElementById('stat-tu').innerText = '0';
+            document.getElementById('stat-mu').innerText = '-';
+            document.getElementById('stat-mu').className = 'text-4xl font-bold text-stone-400';
+            document.getElementById('mu-trend-text').innerText = 'শুরু করতে বোতাম চাপুন';
+            document.getElementById('simulation-status').innerText = 'রিসেট করা হয়েছে। আবার শুরু করুন।';
+            document.getElementById('simulation-status').className = 'mt-4 p-3 bg-stone-50 rounded-lg text-sm text-stone-600 text-center border border-stone-200';
+            document.getElementById('btn-consume').disabled = false;
+            document.getElementById('btn-consume').classList.remove('opacity-50', 'cursor-not-allowed');
+            document.getElementById('btn-consume').innerHTML = "<span>🍎</span> আপেল ভোগ করুন";
+
+            document.getElementById('schedule-body').innerHTML = '<tr class="text-stone-400 italic"><td class="p-4" colspan="4">এখনও কোনো ডেটা নেই...</td></tr>';
+
+            // Re-initialize chart data if it exists
+            if (chartInstance) {
+                chartInstance.data.labels = [0];
+                chartInstance.data.datasets[0].data = [0];
+                chartInstance.data.datasets[1].data = [null];
+                chartInstance.update();
+            }
+            hideMessageBox(); // Clear any previous message box
+        }
+        
+        // ... (updateDOM, updateTable, updateChart, checkStatus functions remain the same)
+        function updateDOM(data) {
+            document.getElementById('stat-q').innerText = data.q;
+            document.getElementById('stat-tu').innerText = data.tu;
+            
+            const muEl = document.getElementById('stat-mu');
+            muEl.innerText = data.mu;
+
+            const muPositiveColor = root.style.getPropertyValue('--mu-positive') || '#16a34a';
+            const muNegativeColor = root.style.getPropertyValue('--mu-negative') || '#e11d48';
+
+            if (data.mu > 0) {
+                muEl.className = 'text-4xl font-bold';
+                muEl.style.color = muPositiveColor;
+                document.getElementById('mu-trend-text').innerText = 'তৃপ্তি বাড়ছে, কিন্তু ক্রমহ্রাসমান হারে';
+            } else if (data.mu === 0) {
+                muEl.className = 'text-4xl font-bold text-amber-500';
+                muEl.style.color = '';
+                document.getElementById('mu-trend-text').innerText = 'সর্বোচ্চ তৃপ্তি অর্জিত হয়েছে';
+            } else {
+                muEl.className = 'text-4xl font-bold';
+                muEl.style.color = muNegativeColor;
+                document.getElementById('mu-trend-text').innerText = 'তৃপ্তি ঋণাত্মক (অস্বস্তি)';
+            }
+        }
+
+        function updateTable(data) {
+            const tbody = document.getElementById('schedule-body');
+            
+            if (currentStep === 1) tbody.innerHTML = '';
+
+            const row = document.createElement('tr');
+            row.className = 'border-b border-stone-50 hover:bg-stone-50 transition-colors animate-pulse';
+            
+            let statusClass = 'text-stone-600';
+            if (data.mu === 0) statusClass = 'text-amber-600 font-bold';
+            if (data.mu < 0) statusClass = 'text-rose-600 font-bold';
+
+            const muColor = data.mu < 0 ? root.style.getPropertyValue('--mu-negative') : root.style.getPropertyValue('--mu-positive');
+
+            row.innerHTML = `
+                <td class="p-3 font-medium">${data.q}</td>
+                <td class="p-3 text-primary-color">${data.tu}</td>
+                <td class="p-3" style="color: ${muColor};">${data.mu}</td>
+                <td class="p-3 ${statusClass} text-xs sm:text-sm">${data.note}</td>
+            `;
+            
+            tbody.appendChild(row);
+            
+            // Remove pulse after 1 second for subtle animation
+            setTimeout(() => row.classList.remove('animate-pulse'), 1000);
+        }
+
+        function updateChart(data) {
+            if (chartInstance) {
+                chartInstance.data.labels.push(data.q);
+                chartInstance.data.datasets[0].data.push(data.tu);
+                chartInstance.data.datasets[1].data.push(data.mu);
+                chartInstance.update();
+            }
+        }
+
+        function checkStatus(data) {
+            const statusEl = document.getElementById('simulation-status');
+            const btn = document.getElementById('btn-consume');
+
+            if (data.mu === 0) {
+                statusEl.innerHTML = "🌟 <strong>সম্পৃক্তি বিন্দু!</strong> আপনার মোট উপযোগ সর্বোচ্চ (৩০)। এরপর আর ভোগ করলে উপযোগ কমবে।";
+                statusEl.className = "mt-4 p-3 bg-amber-100 text-amber-800 rounded-lg text-sm text-center border border-amber-200";
+            } else if (data.mu < 0) {
+                statusEl.innerHTML = "⚠️ <strong>সতর্কতা!</strong> অ-উপযোগ শুরু হয়েছে। মোট উপযোগ কমছে।";
+                statusEl.className = "mt-4 p-3 bg-rose-100 text-rose-800 rounded-lg text-sm text-center border border-rose-200";
+                
+                // Disable the consume button
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.innerHTML = "❌ আর সম্ভব নয়";
+            } else {
+                statusEl.innerHTML = `একক ${data.q} গৃহীত। প্রান্তিক উপযোগ ${data.mu}। ক্রমহ্রাসমান হারে বাড়ছে।`;
+                statusEl.className = "mt-4 p-3 bg-stone-100 text-stone-600 rounded-lg text-sm text-center border border-stone-200";
+            }
+        }
+        // ... (end of data update functions)
+
+        // --- Custom Message Box Logic (Replaces alert()) ---
+        function showMessageBox(title, message) {
+            const modal = document.createElement('div');
+            modal.id = 'message-box-modal';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-70 z-[2000] flex items-center justify-center p-4 transition-opacity duration-300';
+            
+            const primaryColor = root.style.getPropertyValue('--primary-color') || colors.indigo.primary;
+
+            modal.innerHTML = `
+                <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-sm transform transition-transform duration-300 scale-100">
+                    <h3 class="text-xl font-bold text-stone-800 mb-3">${title}</h3>
+                    <p class="text-stone-600 mb-5">${message}</p>
+                    <button onclick="hideMessageBox()" style="background-color: ${primaryColor};" class="w-full hover:bg-opacity-90 text-white font-semibold py-2 rounded-lg transition-colors">
+                        বুঝেছি
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function hideMessageBox() {
+            const modal = document.getElementById('message-box-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+
+        // --- Settings Modal Logic ---
+        function openSettings() {
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function setAccentColor(colorName) {
+            const color = colors[colorName];
+            
+            root.style.setProperty('--primary-color', color.primary);
+            root.style.setProperty('--primary-light', color.light);
+            root.style.setProperty('--primary-dark', color.dark);
+            
+            // Update checkmark visibility
+            document.querySelectorAll('.color-select-btn span').forEach(span => span.classList.add('hidden'));
+            document.getElementById(`check-${colorName}`).classList.remove('hidden');
+
+            if (chartInstance) {
+                chartInstance.data.datasets[0].borderColor = color.primary;
+                chartInstance.update();
+            }
+        }
+
+        function adjustFontSize(size) {
+            const sizeInPx = size + 'px';
+            root.style.setProperty('--text-base', sizeInPx);
+            document.getElementById('currentFontSize').innerText = sizeInPx;
+        }
+
+        // --- Event Listener Initialization (The new robust part) ---
+        function initAppListeners() {
+            // 1. Splash Screen Button
+            document.getElementById('start-button').addEventListener('click', startApp);
+            
+            // 2. Navigation Delegation (Handles concepts, simulation, analysis)
+            const navContainer = document.getElementById('nav-container');
+            if (navContainer) {
+                navContainer.addEventListener('click', (event) => {
+                    const targetBtn = event.target.closest('.nav-tab-btn');
+                    if (targetBtn) {
+                        const tabId = targetBtn.getAttribute('data-tab');
+                        switchTab(tabId);
+                    }
+                });
+            }
+            
+            // 3. Simulation Control Buttons
+            document.getElementById('btn-consume').addEventListener('click', consumeUnit);
+            document.getElementById('btn-reset').addEventListener('click', resetSimulation);
+            document.getElementById('go-to-simulation-btn').addEventListener('click', () => switchTab('simulation'));
+            
+            // 4. Settings Buttons
+            document.getElementById('settings-button').addEventListener('click', openSettings);
+            
+            document.querySelectorAll('.color-select-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setAccentColor(btn.getAttribute('data-color'));
+                });
+            });
+
+            // 5. Initial Setup
+            setAccentColor('indigo');
+            adjustFontSize(document.getElementById('fontSizeSlider').value);
+        }
+
+        // Execute initialization when the window loads
+        window.onload = initAppListeners;
+    </script>
+</body>
+</html>
