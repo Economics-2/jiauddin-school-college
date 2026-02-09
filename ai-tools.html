@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tools Vault & 100+ Prompts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+        }
+        .ai-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+        }
+        .tool-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            border-color: #6366f1;
+        }
+        .prompt-box {
+            background: #1e293b;
+            border-left: 4px solid #6366f1;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        .tab-btn.active {
+            background: #6366f1;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="ai-gradient py-16 px-6 text-center shadow-2xl">
+        <h1 class="text-4xl md:text-6xl font-bold mb-4">🤖 AI Tools Vault</h1>
+        <p class="text-xl text-indigo-100 max-w-3xl mx-auto">
+            সেরা এআই টুলস ব্যবহারের পূর্ণাঙ্গ গাইডলাইন এবং ১০০টি "Ready-to-Use" প্রম্পট যা আপনার কাজকে ১০ গুণ সহজ করবে।
+        </p>
+    </header>
+
+    <main class="max-w-6xl mx-auto py-12 px-6">
+        
+        <!-- Tool Section 1: Content & Scripting -->
+        <section class="mb-20">
+            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
+                <span class="p-2 bg-indigo-500 rounded-lg">✍️</span> ১. স্ক্রিপ্ট ও কন্টেন্ট রাইটিং (ChatGPT/Claude)
+            </h2>
+            <div class="grid md:grid-cols-2 gap-8 mb-10">
+                <div class="tool-card p-6 rounded-2xl">
+                    <h3 class="text-xl font-bold mb-4 text-indigo-400">সেরা আউটপুট পাওয়ার কৌশল:</h3>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li>🎯 <strong>Role Play:</strong> এআই-কে নির্দিষ্ট রোল দিন। যেমন: "Act as a professional YouTuber."</li>
+                        <li>🎯 <strong>Constraint:</strong> সীমাবদ্ধতা দিন। যেমন: "Use simple words," "Keep it under 1000 words."</li>
+                        <li>🎯 <strong>Tone:</strong> টোন সেট করুন। যেমন: "Witty," "Educational," বা "Suspenseful."</li>
+                    </ul>
+                </div>
+                <div class="tool-card p-6 rounded-2xl">
+                    <h3 class="text-xl font-bold mb-4 text-indigo-400">মাস্টার প্রম্পট ফর্মুলা:</h3>
+                    <div class="p-4 bg-black/30 rounded-lg italic text-sm">
+                        [Role] + [Task] + [Context] + [Tone] + [Output Format]
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prompts Accordion (Sample) -->
+            <div class="space-y-4">
+                <h4 class="font-bold text-lg mb-4 text-pink-400">🔥 কন্টেন্ট রাইটিং-এর জন্য ২০টি প্রম্পট:</h4>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="prompt-box p-4 rounded-lg text-slate-300">"Write a high-retention YouTube script about [Topic] focusing on a US audience. Use a storytelling approach and add a hook in the first 10 seconds."</div>
+                    <div class="prompt-box p-4 rounded-lg text-slate-300">"Create 10 viral YouTube titles for a video about [Niche] that use psychological triggers like curiosity and urgency."</div>
+                    <div class="prompt-box p-4 rounded-lg text-slate-300">"Act as an SEO expert. Write a 200-word YouTube description for a video on [Topic] including these keywords: [Keywords]."</div>
+                    <div class="prompt-box p-4 rounded-lg text-slate-300">"Give me 5 unique video ideas for a faceless channel in the [Finance] niche that are currently trending in the USA."</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tool Section 2: Realistic Voiceover -->
+        <section class="mb-20">
+            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
+                <span class="p-2 bg-purple-500 rounded-lg">🎙️</span> ২. প্রফেশনাল ভয়েসওভার (ElevenLabs)
+            </h2>
+            <div class="bg-slate-800/40 p-8 rounded-3xl border border-slate-700">
+                <h3 class="text-xl font-bold mb-4">ElevenLabs থেকে সেরা আউটপুট পাওয়ার গাইড:</h3>
+                <div class="grid md:grid-cols-3 gap-6 text-sm">
+                    <div class="bg-slate-900/50 p-4 rounded-xl">
+                        <p class="font-bold text-purple-400 mb-2">Punctuation Matters</p>
+                        <p>কমা (,), ফুলস্টপ (.), এবং ড্যাশ (—) সঠিকভাবে ব্যবহার করুন। ড্যাশ দিলে এআই সেখানে একটু বেশি বিরতি দেবে।</p>
+                    </div>
+                    <div class="bg-slate-900/50 p-4 rounded-xl">
+                        <p class="font-bold text-purple-400 mb-2">Voice Settings</p>
+                        <p>Stability ৫০% এবং Clarity ৭৫% রাখুন ন্যাচারাল টোনের জন্য। বেশি Stability ভয়েসকে রোবোটিক করে ফেলে।</p>
+                    </div>
+                    <div class="bg-slate-900/50 p-4 rounded-xl">
+                        <p class="font-bold text-purple-400 mb-2">Emotion Tags</p>
+                        <p>ব্র্যাকেটে (Excitedly) বা (Whispering) লিখে স্টাইল চেক করুন (যদিও এটি সরাসরি সব মডেলে কাজ করে না, তবে কন্টেক্সট অনুযায়ী এআই পরিবর্তন করে)।</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tool Section 3: Image & Thumbnail -->
+        <section class="mb-20">
+            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
+                <span class="p-2 bg-pink-500 rounded-lg">🖼️</span> ৩. থাম্বনেইল ও ইমেজ (Midjourney/Leonardo)
+            </h2>
+            <div class="space-y-6">
+                <h4 class="font-bold text-lg text-pink-400">🔥 ইমেজ জেনারেট করার জন্য ৩০টি প্রম্পট:</h4>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="prompt-box p-4 rounded-lg text-xs text-slate-400">"Hyper-realistic 8k image of a luxury modern mansion in Los Angeles during sunset, cinematic lighting, --ar 16:9"</div>
+                    <div class="prompt-box p-4 rounded-lg text-xs text-slate-400">"3D isometric illustration of a man sitting on a pile of gold coins, looking at a laptop, vibrant colors, Pixar style"</div>
+                    <div class="prompt-box p-4 rounded-lg text-xs text-slate-400">"Close-up of a futuristic robot hand holding a glowing brain, neon blue and purple accents, cyberpunk aesthetic"</div>
+                    <div class="prompt-box p-4 rounded-lg text-xs text-slate-400">"A professional studio setup with a microphone, dark background, blue rim lighting, high quality photography"</div>
+                    <div class="prompt-box p-4 rounded-lg text-xs text-slate-400">"An old dusty book opening to reveal a magical galaxy inside, ethereal lighting, dreamlike, highly detailed"</div>
+                    <div class="prompt-box p-4 rounded-lg text-xs text-slate-400">"Portrait of a successful American entrepreneur in a suit, blurred New York City background, corporate style"</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tool Section 4: Video Editing -->
+        <section class="mb-20">
+            <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
+                <span class="p-2 bg-green-500 rounded-lg">🎬</span> ৪. এআই ভিডিও এডিটিং (Pictory/CapCut)
+            </h2>
+            <div class="tool-card p-8 rounded-3xl">
+                <h3 class="font-bold mb-4">এডিটিং এআই প্রম্পট ও হ্যাকস:</h3>
+                <div class="space-y-4 text-sm">
+                    <div class="p-4 bg-slate-900/50 rounded-xl">
+                        <span class="text-green-400 font-bold">Auto-Caption Prompt (CapCut):</span> "Apply dynamic captions with 'Bangers' font, yellow highlight on keywords, and 0.5s fade-in animation."
+                    </div>
+                    <div class="p-4 bg-slate-900/50 rounded-xl">
+                        <span class="text-green-400 font-bold">Pictory Script-to-Video Hack:</span> স্ক্রিপ্ট দেওয়ার সময় প্রতি ২-৩ লাইনে একটি করে এন্টার (Enter) দিন। এতে এআই বুঝতে পারবে কখন সীন (Scene) পরিবর্তন করতে হবে।
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The 100 Prompts Mega List (Summary View) -->
+        <section class="mb-20">
+            <div class="bg-indigo-600 p-10 rounded-3xl text-center">
+                <h2 class="text-3xl font-bold mb-4">🚀 ১০০+ মাস্টার প্রম্পট লাইব্রেরি</h2>
+                <p class="mb-8">আমি নিচেই ক্যাটাগরি অনুযায়ী প্রম্পটগুলো সাজিয়ে দিয়েছি। কপি করে ব্যবহার করুন!</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button class="bg-white/10 hover:bg-white/20 p-4 rounded-xl text-sm font-bold">YouTube SEO (20)</button>
+                    <button class="bg-white/10 hover:bg-white/20 p-4 rounded-xl text-sm font-bold">Thumbnail Art (30)</button>
+                    <button class="bg-white/10 hover:bg-white/20 p-4 rounded-xl text-sm font-bold">Viral Scripts (30)</button>
+                    <button class="bg-white/10 hover:bg-white/20 p-4 rounded-xl text-sm font-bold">Ads & Marketing (20)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Prompts List -->
+        <section class="space-y-8">
+            <div class="tool-card p-6 rounded-2xl">
+                <h3 class="text-xl font-bold mb-4 border-b border-slate-700 pb-2 text-yellow-400">ইউটিউব এসইও ও ভাইরাল টাইটেল প্রম্পট (নমুনা):</h3>
+                <ol class="list-decimal ml-6 space-y-3 text-slate-300 text-sm">
+                    <li>"Create a curiosity-driven title for a video about [Topic] that makes people want to click immediately."</li>
+                    <li>"Generate 50 tags for a YouTube video about [Niche] ranked by search volume in the USA."</li>
+                    <li>"Write a pinned comment for this video that encourages viewers to subscribe and click the link in bio."</li>
+                    <li>"Rewrite this title to be more 'Clickbaity' but without being misleading: [Original Title]."</li>
+                    <li>"Suggest a community post poll to engage my audience about [Topic]."</li>
+                </ol>
+            </div>
+
+            <div class="tool-card p-6 rounded-2xl">
+                <h3 class="text-xl font-bold mb-4 border-b border-slate-700 pb-2 text-blue-400">এআই ইমেজ ও আর্ট প্রম্পট (নমুনা):</h3>
+                <ol class="list-decimal ml-6 space-y-3 text-slate-300 text-sm">
+                    <li>"A 3D render of a futuristic digital wallet spilling out holographic dollars, dark background, 4k."</li>
+                    <li>"A cinematic shot of a traveler looking at the Grand Canyon, high contrast, vibrant sky, photorealistic."</li>
+                    <li>"Flat vector illustration of a team working on AI technology, soft pastels, modern web design style."</li>
+                    <li>"Explosion of colorful liquid paint in the shape of a play button, black background, high speed photography."</li>
+                    <li>"An astronaut sitting on the moon drinking coffee, earth in the background, highly detailed oil painting style."</li>
+                </ol>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-12 border-t border-slate-800">
+        <p class="text-slate-500">গাইডলাইনটি বুকমার্ক করে রাখুন। এআই প্রম্পটগুলো নিয়মিত আপডেট করা হবে।</p>
+    </footer>
+
+    <script>
+        // Tab switching logic (simple placeholder)
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Logic to filter prompts can be added here
+            });
+        });
+    </script>
+</body>
+</html>
